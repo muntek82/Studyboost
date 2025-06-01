@@ -1,0 +1,136 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyBoost App</title>
+    <style>
+        header{
+            background-color:#004080;
+            color:white;
+            padding:15px;
+            text-align:center;
+            font-family:Arial, sans-serif;
+            font-size:24px;
+            font-weight:bold;
+            }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2em;
+            background: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        label, select, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            background: #fff;
+            max-width: 800px;
+            margin: 2em auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        iframe {
+            margin-top: 20px;
+            width: 100%;
+            height: 315px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Welcome to {{ son_name }}'s Study Boost – Your personal study companion!</h1>
+
+    <form method="POST">
+        <label for="term">Select Term:</label>
+        <select name="term" id="term">
+            <option value="Term 2">Term 2</option>
+            <option value="Term 3">Term 3</option>
+            <option value="Term 4">Term 4</option>
+        </select>
+
+        <label for="subject">Select Subject:</label>
+        <select name="subject" id="subject" onchange="updateTopics()">
+            <option value="">-- Select Subject --</option>
+            {% for subj in study_notes %}
+            <option value="{{ subj }}">{{ subj }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="topic">Select Topic:</label>
+        <select name="topic" id="topic">
+            <option value="">-- Select Topic --</option>
+        </select>
+
+        <button type="submit">Search</button>
+    </form>
+
+    {% if subject and topic %}
+    <div class="result">
+        <p>You searched for <strong>{{ topic }}</strong> in <strong>{{ subject }}</strong></p>
+
+        {% if note %}
+            <h3>📝 Study Notes:</h3>
+            <p>{{ note }}</p>
+        {% endif %}
+
+        {% if paper_link %}
+            <h3>📄 Past Exam Papers:</h3>
+            <p><a href="{{ paper_link }}" target="_blank">View Past Papers</a></p>
+        {% endif %}
+
+        {% if video %}
+            <h3>🎥 Video Explanation:</h3>
+            <iframe src="{{ video }}" frameborder="0" allowfullscreen></iframe>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <script>
+        const notes = {{ study_notes | tojson }};
+        function updateTopics() {
+            const subjectSelect = document.getElementById("subject");
+            const topicSelect = document.getElementById("topic");
+            const selectedSubject = subjectSelect.value;
+
+            // Clear current topics
+            topicSelect.innerHTML = '<option value="">-- Select Topic --</option>';
+
+            if (notes[selectedSubject]) {
+                for (let topic in notes[selectedSubject]) {
+                    const opt = document.createElement("option");
+                    opt.value = topic;
+                    opt.innerHTML = topic;
+                    topicSelect.appendChild(opt);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+
